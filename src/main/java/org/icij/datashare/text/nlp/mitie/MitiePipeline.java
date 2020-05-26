@@ -3,6 +3,7 @@ package org.icij.datashare.text.nlp.mitie;
 import com.google.inject.Inject;
 import edu.mit.ll.mitie.*;
 import org.icij.datashare.PropertiesProvider;
+import org.icij.datashare.text.Document;
 import org.icij.datashare.text.Language;
 import org.icij.datashare.text.NamedEntity;
 import org.icij.datashare.text.nlp.AbstractPipeline;
@@ -11,7 +12,6 @@ import org.icij.datashare.text.nlp.NlpStage;
 import org.icij.datashare.text.nlp.Pipeline;
 
 import java.util.*;
-
 import static java.lang.Math.toIntExact;
 import static java.util.Arrays.asList;
 import static org.icij.datashare.text.Language.ENGLISH;
@@ -53,14 +53,15 @@ public class MitiePipeline extends AbstractPipeline {
     }
 
     @Override
-    public Annotations process(String content, String docId, Language language) {
-        Annotations annotations = new Annotations(docId, getType(), language);
+    public List<NamedEntity> process(Document doc) {
+        Language language = doc.getLanguage();
+        Annotations annotations = new Annotations(doc.getId(), getType(), language);
 
         // Tokenize input
         LOGGER.info("tokenizing for " + language.toString());
         TokenIndexVector tokens = new TokenIndexVector();
         try {
-            tokens = global.tokenizeWithOffsets(content);
+            tokens = global.tokenizeWithOffsets(doc.getContent());
         } catch (Exception e) {
             LOGGER.error("failed tokenizing input ", e);
         }
@@ -81,7 +82,7 @@ public class MitiePipeline extends AbstractPipeline {
                 entities = MitieNlpModels.getInstance().extract(tokens, language);
                 // Feed annotations
                 // transform index offset given in bytes of utf-8 representation to chars offset in string
-                byte[] inputBytes = content.getBytes(getEncoding());
+                byte[] inputBytes = doc.getContent().getBytes(getEncoding());
                 for (int i = 0; i < entities.size(); ++i) {
                     EntityMention entity = entities.get(i);
                     TokenIndexPair tokenBegin = tokens.get(entity.getStart());
@@ -99,7 +100,7 @@ public class MitiePipeline extends AbstractPipeline {
                 LOGGER.error("entities extraction interrupted", e);
             }
         }
-        return annotations;
+        return NamedEntity.allFrom(doc.getContent(), annotations);
     }
 
     private static void printEntity(TokenIndexVector tokens, EntityMention entity) {
