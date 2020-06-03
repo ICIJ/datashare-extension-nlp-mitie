@@ -39,7 +39,7 @@ public final class MitieNlpModels extends AbstractModels<NamedEntityExtractor> {
     private MitieNlpModels() {super(Pipeline.Type.MITIE, NER);}
 
     @Override
-    protected NamedEntityExtractor loadModelFile(Language language, ClassLoader loader) throws IOException {
+    protected NamedEntityExtractor loadModelFile(Language language) throws IOException {
         return new NamedEntityExtractor(getModelsFilesystemPath(language).resolve(NER_MODEL_NAME).toAbsolutePath().toString());
     }
 
