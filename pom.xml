@@ -26,9 +26,8 @@
             <organization>ICIJ</organization>
         </developer>
         <developer>
-            <name>Julien Martin</name>
-            <id>julm</id>
-            <email>julien.pierre.martin@gmail.com</email>
+            <name>Maxixme Vanza Lutonda</name>
+            <email>mvanza@icij.org</email>
             <organization>ICIJ</organization>
         </developer>
     </developers>
@@ -62,7 +61,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>datashare-api</artifactId>
-            <version>7.0.3</version>
+            <version>7.30.0</version>
         </dependency>
 
         <dependency>
